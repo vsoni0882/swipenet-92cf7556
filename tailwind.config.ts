@@ -1,3 +1,4 @@
+
 import type { Config } from "tailwindcss";
 
 export default {
@@ -61,6 +62,13 @@ export default {
 					'accent-foreground': 'hsl(var(--sidebar-accent-foreground))',
 					border: 'hsl(var(--sidebar-border))',
 					ring: 'hsl(var(--sidebar-ring))'
+				},
+				swapnet: {
+					blue: '#0D73D1',
+					green: '#1FDF64',
+					red: '#FF5E5B',
+					gray: '#F5F7FA',
+					dark: '#2A3349',
 				}
 			},
 			borderRadius: {
@@ -84,11 +92,33 @@ export default {
 					to: {
 						height: '0'
 					}
+				},
+				'swipe-right': {
+					from: { 
+						transform: 'translateX(0) rotate(0)',
+						opacity: '1'
+					},
+					to: { 
+						transform: 'translateX(150%) rotate(30deg)',
+						opacity: '0'
+					}
+				},
+				'swipe-left': {
+					from: { 
+						transform: 'translateX(0) rotate(0)',
+						opacity: '1'
+					},
+					to: { 
+						transform: 'translateX(-150%) rotate(-30deg)',
+						opacity: '0'
+					}
 				}
 			},
 			animation: {
 				'accordion-down': 'accordion-down 0.2s ease-out',
-				'accordion-up': 'accordion-up 0.2s ease-out'
+				'accordion-up': 'accordion-up 0.2s ease-out',
+				'swipe-right': 'swipe-right 0.5s forwards',
+				'swipe-left': 'swipe-left 0.5s forwards'
 			}
 		}
 	},
