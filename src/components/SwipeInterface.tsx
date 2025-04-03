@@ -25,6 +25,19 @@ const SwipeInterface: React.FC<SwipeInterfaceProps> = ({
   const [swipeDirection, setSwipeDirection] = useState<'left' | 'right' | null>(null);
   const cardRef = useRef<HTMLDivElement>(null);
 
+  // Add a class to prevent text selection during swiping
+  useEffect(() => {
+    if (isDragging) {
+      document.body.classList.add('no-select');
+    } else {
+      document.body.classList.remove('no-select');
+    }
+    
+    return () => {
+      document.body.classList.remove('no-select');
+    };
+  }, [isDragging]);
+
   const handleMouseDown = (e: React.MouseEvent) => {
     setIsDragging(true);
     setStartX(e.clientX);
@@ -159,7 +172,9 @@ const SwipeInterface: React.FC<SwipeInterfaceProps> = ({
       ? '0 10px 25px rgba(31, 223, 100, 0.3)' 
       : swipeDirection === 'left' 
         ? '0 10px 25px rgba(255, 94, 91, 0.3)' 
-        : '0 10px 15px rgba(0, 0, 0, 0.1)'
+        : '0 10px 15px rgba(0, 0, 0, 0.1)',
+    userSelect: 'none',
+    WebkitUserSelect: 'none',
   };
 
   const getBorderColor = () => {
