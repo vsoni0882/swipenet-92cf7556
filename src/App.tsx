@@ -7,6 +7,8 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Index from "./pages/Index";
 import JobSeekerDashboard from "./pages/JobSeekerDashboard";
 import EmployerDashboard from "./pages/EmployerDashboard";
+import EmployeeProfile from "./pages/EmployeeProfile";
+import EmployerProfile from "./pages/EmployerProfile";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -21,6 +23,8 @@ const App = () => (
           <Route path="/" element={<Index />} />
           <Route path="/job-seeker" element={<JobSeekerDashboard />} />
           <Route path="/employer" element={<EmployerDashboard />} />
+          <Route path="/employee-profile" element={<EmployeeProfile />} />
+          <Route path="/employer-profile" element={<EmployerProfile />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
