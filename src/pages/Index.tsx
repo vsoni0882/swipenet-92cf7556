@@ -2,7 +2,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
-import { Briefcase, User, ArrowRight } from 'lucide-react';
+import { Briefcase, User, ArrowRight, MapPin, DollarSign } from 'lucide-react';
 import Header from '@/components/Header';
 
 const Index: React.FC = () => {
