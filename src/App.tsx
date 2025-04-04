@@ -11,6 +11,7 @@ import JobSeekerDashboard from "./pages/JobSeekerDashboard";
 import EmployerDashboard from "./pages/EmployerDashboard";
 import EmployeeProfile from "./pages/EmployeeProfile";
 import EmployerProfile from "./pages/EmployerProfile";
+import ColdMailing from "./pages/ColdMailing";
 import NotFound from "./pages/NotFound";
 import AuthProtected from "./components/AuthProtected";
 
@@ -47,6 +48,11 @@ const App = () => (
           <Route path="/employer-profile" element={
             <AuthProtected userType="employer">
               <EmployerProfile />
+            </AuthProtected>
+          } />
+          <Route path="/cold-mailing" element={
+            <AuthProtected>
+              <ColdMailing />
             </AuthProtected>
           } />
           
