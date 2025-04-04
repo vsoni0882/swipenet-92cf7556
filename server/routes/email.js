@@ -2,7 +2,7 @@
 const express = require('express');
 const router = express.Router();
 const nodemailer = require('nodemailer');
-const authMiddleware = require('../middleware/auth');
+const { protect } = require('../middleware/auth');
 
 // Create a test transporter for development
 // In production, you'd use real SMTP credentials
@@ -20,7 +20,7 @@ const transporter = nodemailer.createTransport({
 });
 
 // Send email to multiple recipients
-router.post('/send-cold-emails', authMiddleware, async (req, res) => {
+router.post('/send-cold-emails', protect, async (req, res) => {
   try {
     const { subject, messageTemplate, senderName, senderEmail, recipientEmails } = req.body;
     
