@@ -51,7 +51,11 @@ const Header: React.FC = () => {
             </Link>
           )}
           <Link to="/" className="flex items-center gap-2">
-            <span className="text-2xl font-bold text-swapnet-blue">SwapNet</span>
+            <img 
+              src="/lovable-uploads/6e0a8e3b-3216-429b-bf26-fdbaf025228d.png" 
+              alt="SwipeNet Logo" 
+              className="h-8" 
+            />
           </Link>
         </div>
         

@@ -18,7 +18,7 @@ const Index: React.FC = () => {
                 Find Your Perfect Match in the Job Market
               </h1>
               <p className="text-lg text-gray-600 mb-8">
-                SwapNet brings the simplicity of swipe-based interfaces to hiring. 
+                SwipeNet brings the simplicity of swipe-based interfaces to hiring. 
                 Match with the right jobs or candidates instantly.
               </p>
               
@@ -118,7 +118,7 @@ const Index: React.FC = () => {
         <div className="container mx-auto px-4">
           <div className="flex flex-col md:flex-row justify-between items-center">
             <div className="mb-4 md:mb-0">
-              <span className="text-xl font-bold">SwapNet</span>
+              <span className="text-xl font-bold">SwipeNet</span>
               <p className="text-sm text-gray-400">Reinventing hiring one swipe at a time</p>
             </div>
             
@@ -131,7 +131,7 @@ const Index: React.FC = () => {
           </div>
           
           <div className="mt-8 text-center text-sm text-gray-400">
-            &copy; {new Date().getFullYear()} SwapNet. All rights reserved.
+            &copy; {new Date().getFullYear()} SwipeNet. All rights reserved.
           </div>
         </div>
       </footer>
