@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 import SwipeInterface from '@/components/SwipeInterface';
 import JobCard from '@/components/JobCard';
 import Header from '@/components/Header';
-import { useToast } from '@/components/ui/use-toast';
+import { useToast } from '@/hooks/use-toast';
 import { Check, X } from 'lucide-react';
 import { mockJobs, Job } from '@/data/mockData';
 import { toast } from 'sonner';
@@ -13,10 +13,22 @@ const JobSeekerDashboard: React.FC = () => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [appliedJobs, setAppliedJobs] = useState<Job[]>([]);
   const [rejectedJobs, setRejectedJobs] = useState<Job[]>([]);
+  const [userHasCV, setUserHasCV] = useState(false);
   
   useEffect(() => {
     // In a real app, we would fetch personalized job recommendations here
     setJobs([...mockJobs]);
+    
+    // Check if user has uploaded a CV
+    const userData = localStorage.getItem('user');
+    if (userData) {
+      try {
+        const user = JSON.parse(userData);
+        setUserHasCV(user.hasCV === true);
+      } catch (error) {
+        console.error("Error parsing user data:", error);
+      }
+    }
   }, []);
 
   const handleSwipeLeft = () => {
@@ -33,6 +45,15 @@ const JobSeekerDashboard: React.FC = () => {
 
   const handleSwipeRight = () => {
     if (currentIndex < jobs.length) {
+      // Before applying, check if user has CV
+      if (!userHasCV) {
+        toast('CV required', {
+          description: 'Please upload your CV in your profile before applying',
+          icon: <X className="h-4 w-4 text-swapnet-red" />,
+        });
+        return;
+      }
+      
       // Apply to job
       setAppliedJobs([...appliedJobs, jobs[currentIndex]]);
       toast('Application sent!', {
@@ -54,6 +75,11 @@ const JobSeekerDashboard: React.FC = () => {
         <div className="mb-8">
           <h1 className="text-2xl font-bold text-swapnet-dark mb-1">Find Your Next Role</h1>
           <p className="text-gray-600">Swipe through jobs that match your skills and experience</p>
+          {!userHasCV && (
+            <div className="mt-2 p-3 bg-amber-50 text-amber-800 rounded-md border border-amber-200">
+              Please upload your CV in your profile to apply for jobs. <a href="/employee-profile" className="underline font-medium">Go to Profile</a>
+            </div>
+          )}
         </div>
         
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">

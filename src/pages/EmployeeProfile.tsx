@@ -1,154 +1,250 @@
 
 import React, { useState } from 'react';
 import Header from '@/components/Header';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { 
-  Briefcase, 
-  GraduationCap, 
-  Award, 
-  Code, 
-  FileText, 
-  User,
-  MapPin,
-  Mail,
-  Phone,
-  Calendar,
-  CheckCircle
-} from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import SkillsSection from '@/components/profile/SkillsSection';
-import ProjectsSection from '@/components/profile/ProjectsSection';
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Pencil, Save, User } from 'lucide-react';
 import ExperienceSection from '@/components/profile/ExperienceSection';
 import EducationSection from '@/components/profile/EducationSection';
+import SkillsSection from '@/components/profile/SkillsSection';
+import ProjectsSection from '@/components/profile/ProjectsSection';
 import AchievementsSection from '@/components/profile/AchievementsSection';
-import { Badge } from '@/components/ui/badge';
+import CVUploadSection from '@/components/profile/CVUploadSection';
+import { toast } from 'sonner';
 
-const EmployeeProfile = () => {
+// Mock user data
+const mockUserProfile = {
+  name: "Jane Doe",
+  title: "Senior Frontend Developer",
+  company: "Tech Innovations Inc.",
+  location: "San Francisco, CA",
+  email: "jane.doe@example.com",
+  phone: "(123) 456-7890",
+  website: "janedoe.dev",
+  bio: "Passionate frontend developer with 8+ years of experience building responsive and accessible web applications. Specialized in React, TypeScript, and modern CSS frameworks."
+};
+
+const EmployeeProfile: React.FC = () => {
   const [isEditing, setIsEditing] = useState(false);
+  const [profile, setProfile] = useState(mockUserProfile);
   
-  // Placeholder data - in a real app this would come from a database
-  const profileData = {
-    name: "Alex Johnson",
-    title: "Senior Frontend Developer",
-    location: "San Francisco, CA",
-    email: "alex.johnson@example.com",
-    phone: "+1 (555) 123-4567",
-    avatar: "https://i.pravatar.cc/150?u=alex",
-    about: "Passionate frontend developer with 5+ years of experience building responsive and accessible web applications. Specializing in React, TypeScript, and modern CSS frameworks.",
-    joinedDate: "May 2021",
-    isVerified: true
+  const handleEditToggle = () => {
+    if (isEditing) {
+      // Save changes
+      setTimeout(() => {
+        // Update localStorage to mark CV as uploaded
+        const userData = localStorage.getItem('user');
+        if (userData) {
+          try {
+            const user = JSON.parse(userData);
+            user.hasCV = true; // Mark CV as uploaded for demo
+            localStorage.setItem('user', JSON.stringify(user));
+          } catch (error) {
+            console.error("Error updating user data:", error);
+          }
+        }
+        
+        toast.success("Profile updated successfully");
+        setIsEditing(false);
+      }, 500);
+    } else {
+      setIsEditing(true);
+    }
   };
-
+  
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const { name, value } = e.target;
+    setProfile(prev => ({ ...prev, [name]: value }));
+  };
+  
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen flex flex-col bg-swapnet-gray">
       <Header />
       
-      <main className="container max-w-6xl mx-auto py-8 px-4">
-        {/* Profile Header */}
-        <div className="bg-white rounded-lg shadow-sm p-6 mb-6">
-          <div className="flex flex-col md:flex-row gap-6 items-start md:items-center">
-            <Avatar className="h-24 w-24 border-2 border-primary/10">
-              <AvatarImage src={profileData.avatar} alt={profileData.name} />
-              <AvatarFallback>{profileData.name.split(' ').map(n => n[0]).join('')}</AvatarFallback>
-            </Avatar>
-            
-            <div className="flex-1">
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                <div>
-                  <h1 className="text-2xl font-bold flex items-center gap-2">
-                    {profileData.name}
-                    {profileData.isVerified && (
-                      <CheckCircle className="h-5 w-5 text-primary" />
-                    )}
-                  </h1>
-                  <p className="text-lg text-gray-600">{profileData.title}</p>
-                </div>
-                
-                <Button 
-                  variant={isEditing ? "default" : "outline"} 
-                  onClick={() => setIsEditing(!isEditing)}
-                >
-                  {isEditing ? "Save Profile" : "Edit Profile"}
-                </Button>
+      <main className="flex-1 container max-w-4xl mx-auto py-8 px-4">
+        <div className="flex justify-between items-center mb-8">
+          <h1 className="text-2xl font-bold text-swapnet-dark">My Profile</h1>
+          
+          <Button 
+            variant={isEditing ? "default" : "outline"} 
+            onClick={handleEditToggle}
+          >
+            {isEditing ? (
+              <>
+                <Save className="h-4 w-4 mr-2" /> Save Changes
+              </>
+            ) : (
+              <>
+                <Pencil className="h-4 w-4 mr-2" /> Edit Profile
+              </>
+            )}
+          </Button>
+        </div>
+        
+        <div className="bg-white rounded-lg shadow-md overflow-hidden mb-8">
+          <div className="p-6 sm:p-8">
+            <div className="flex flex-col sm:flex-row gap-6 mb-8">
+              <div className="w-32 h-32 rounded-full bg-gray-200 flex items-center justify-center mx-auto sm:mx-0">
+                {isEditing ? (
+                  <div className="relative cursor-pointer group">
+                    <div className="w-32 h-32 rounded-full bg-gray-200 flex items-center justify-center overflow-hidden">
+                      <User className="h-16 w-16 text-gray-400" />
+                    </div>
+                    <div className="absolute inset-0 bg-black bg-opacity-50 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                      <span className="text-white text-xs font-medium">Change Photo</span>
+                    </div>
+                  </div>
+                ) : (
+                  <User className="h-16 w-16 text-gray-400" />
+                )}
               </div>
               
-              <div className="mt-3 flex flex-wrap gap-3 text-sm text-gray-500">
-                <div className="flex items-center gap-1">
-                  <MapPin className="h-4 w-4" />
-                  <span>{profileData.location}</span>
-                </div>
-                <div className="flex items-center gap-1">
-                  <Mail className="h-4 w-4" />
-                  <span>{profileData.email}</span>
-                </div>
-                <div className="flex items-center gap-1">
-                  <Phone className="h-4 w-4" />
-                  <span>{profileData.phone}</span>
-                </div>
-                <div className="flex items-center gap-1">
-                  <Calendar className="h-4 w-4" />
-                  <span>Joined {profileData.joinedDate}</span>
-                </div>
+              <div className="flex-1">
+                {isEditing ? (
+                  <div className="space-y-4">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        Full Name
+                      </label>
+                      <Input 
+                        name="name"
+                        value={profile.name}
+                        onChange={handleInputChange}
+                      />
+                    </div>
+                    
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        Title
+                      </label>
+                      <Input 
+                        name="title"
+                        value={profile.title}
+                        onChange={handleInputChange}
+                      />
+                    </div>
+                    
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                          Company
+                        </label>
+                        <Input 
+                          name="company"
+                          value={profile.company}
+                          onChange={handleInputChange}
+                        />
+                      </div>
+                      
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                          Location
+                        </label>
+                        <Input 
+                          name="location"
+                          value={profile.location}
+                          onChange={handleInputChange}
+                        />
+                      </div>
+                    </div>
+                  </div>
+                ) : (
+                  <>
+                    <h2 className="text-2xl font-bold text-swapnet-dark">{profile.name}</h2>
+                    <p className="text-lg text-gray-600 mt-1">{profile.title}</p>
+                    <div className="flex flex-wrap gap-x-4 gap-y-2 mt-3 text-sm text-gray-500">
+                      {profile.company && <span>{profile.company}</span>}
+                      {profile.location && <span>{profile.location}</span>}
+                    </div>
+                  </>
+                )}
               </div>
             </div>
-          </div>
-          
-          <div className="mt-6">
-            <h3 className="font-medium mb-2">About</h3>
-            <p className="text-gray-600">
-              {profileData.about}
-            </p>
+            
+            <div className="border-t border-gray-200 pt-6">
+              <h3 className="text-lg font-semibold mb-4">Contact Information</h3>
+              
+              {isEditing ? (
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Email
+                    </label>
+                    <Input 
+                      name="email"
+                      value={profile.email}
+                      onChange={handleInputChange}
+                    />
+                  </div>
+                  
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Phone
+                    </label>
+                    <Input 
+                      name="phone"
+                      value={profile.phone}
+                      onChange={handleInputChange}
+                    />
+                  </div>
+                  
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Website
+                    </label>
+                    <Input 
+                      name="website"
+                      value={profile.website}
+                      onChange={handleInputChange}
+                    />
+                  </div>
+                </div>
+              ) : (
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-3">
+                  <div className="flex items-center">
+                    <span className="w-20 text-sm font-medium text-gray-500">Email:</span>
+                    <span className="text-gray-900">{profile.email}</span>
+                  </div>
+                  
+                  <div className="flex items-center">
+                    <span className="w-20 text-sm font-medium text-gray-500">Phone:</span>
+                    <span className="text-gray-900">{profile.phone}</span>
+                  </div>
+                  
+                  <div className="flex items-center">
+                    <span className="w-20 text-sm font-medium text-gray-500">Website:</span>
+                    <span className="text-gray-900">{profile.website}</span>
+                  </div>
+                </div>
+              )}
+            </div>
+            
+            <div className="border-t border-gray-200 pt-6 mt-6">
+              <h3 className="text-lg font-semibold mb-4">About Me</h3>
+              
+              {isEditing ? (
+                <Textarea 
+                  name="bio"
+                  value={profile.bio}
+                  onChange={handleInputChange}
+                  className="min-h-[120px]"
+                />
+              ) : (
+                <p className="text-gray-700 whitespace-pre-line">{profile.bio}</p>
+              )}
+            </div>
           </div>
         </div>
         
-        {/* Profile Content */}
-        <Tabs defaultValue="skills" className="w-full">
-          <TabsList className="w-full md:w-auto grid grid-cols-3 md:grid-cols-5 gap-2">
-            <TabsTrigger value="skills" className="flex items-center gap-2">
-              <Code className="h-4 w-4" />
-              <span className="hidden md:inline">Skills</span>
-            </TabsTrigger>
-            <TabsTrigger value="projects" className="flex items-center gap-2">
-              <FileText className="h-4 w-4" />
-              <span className="hidden md:inline">Projects</span>
-            </TabsTrigger>
-            <TabsTrigger value="experience" className="flex items-center gap-2">
-              <Briefcase className="h-4 w-4" />
-              <span className="hidden md:inline">Experience</span>
-            </TabsTrigger>
-            <TabsTrigger value="education" className="flex items-center gap-2">
-              <GraduationCap className="h-4 w-4" />
-              <span className="hidden md:inline">Education</span>
-            </TabsTrigger>
-            <TabsTrigger value="achievements" className="flex items-center gap-2">
-              <Award className="h-4 w-4" />
-              <span className="hidden md:inline">Achievements</span>
-            </TabsTrigger>
-          </TabsList>
-          
-          <div className="mt-6 bg-white rounded-lg shadow-sm p-6">
-            <TabsContent value="skills">
-              <SkillsSection isEditing={isEditing} />
-            </TabsContent>
-            
-            <TabsContent value="projects">
-              <ProjectsSection isEditing={isEditing} />
-            </TabsContent>
-            
-            <TabsContent value="experience">
-              <ExperienceSection isEditing={isEditing} />
-            </TabsContent>
-            
-            <TabsContent value="education">
-              <EducationSection isEditing={isEditing} />
-            </TabsContent>
-            
-            <TabsContent value="achievements">
-              <AchievementsSection isEditing={isEditing} />
-            </TabsContent>
-          </div>
-        </Tabs>
+        <div className="space-y-8">
+          <CVUploadSection isEditing={isEditing} />
+          <SkillsSection isEditing={isEditing} />
+          <ExperienceSection isEditing={isEditing} />
+          <EducationSection isEditing={isEditing} />
+          <ProjectsSection isEditing={isEditing} />
+          <AchievementsSection isEditing={isEditing} />
+        </div>
       </main>
     </div>
   );
