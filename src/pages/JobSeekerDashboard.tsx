@@ -1,34 +1,24 @@
-
 import React, { useState, useEffect } from 'react';
 import SwipeInterface from '@/components/SwipeInterface';
 import JobCard from '@/components/JobCard';
 import Header from '@/components/Header';
-import { useToast } from '@/hooks/use-toast';
 import { Check, X } from 'lucide-react';
 import { mockJobs, Job } from '@/data/mockData';
 import { toast } from 'sonner';
+import { useAuthStore } from '@/store/authStore';
 
 const JobSeekerDashboard: React.FC = () => {
   const [jobs, setJobs] = useState<Job[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [appliedJobs, setAppliedJobs] = useState<Job[]>([]);
   const [rejectedJobs, setRejectedJobs] = useState<Job[]>([]);
-  const [userHasCV, setUserHasCV] = useState(false);
+  
+  const { user } = useAuthStore();
+  const userHasCV = user?.hasCV || false;
   
   useEffect(() => {
     // In a real app, we would fetch personalized job recommendations here
     setJobs([...mockJobs]);
-    
-    // Check if user has uploaded a CV
-    const userData = localStorage.getItem('user');
-    if (userData) {
-      try {
-        const user = JSON.parse(userData);
-        setUserHasCV(user.hasCV === true);
-      } catch (error) {
-        console.error("Error parsing user data:", error);
-      }
-    }
   }, []);
 
   const handleSwipeLeft = () => {

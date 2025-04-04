@@ -1,6 +1,6 @@
 
-import React, { useState } from 'react';
-import { Link, Navigate, useNavigate } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { Link, Navigate, useNavigate, useLocation } from 'react-router-dom';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { 
@@ -16,6 +16,7 @@ import { toast } from "sonner";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Mail, Lock, LogIn } from "lucide-react";
+import { useAuthStore } from "@/store/authStore";
 
 // Define the form schema with validation
 const formSchema = z.object({
@@ -26,9 +27,11 @@ const formSchema = z.object({
 type FormValues = z.infer<typeof formSchema>;
 
 const Login = () => {
-  const [isLoading, setIsLoading] = useState(false);
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
   const navigate = useNavigate();
+  const location = useLocation();
+  const from = location.state?.from?.pathname || "/";
+  
+  const { login, user, isLoading, error } = useAuthStore();
   
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
@@ -38,50 +41,38 @@ const Login = () => {
     },
   });
 
-  const onSubmit = async (values: FormValues) => {
-    setIsLoading(true);
-    
-    try {
-      // In a real app, you would authenticate with a backend service
-      console.log("Login attempt:", values);
-      
-      // Mock authentication for demo
-      setTimeout(() => {
-        // Store user info in localStorage for demo purposes
-        localStorage.setItem("user", JSON.stringify({
-          email: values.email,
-          isAuthenticated: true,
-          userType: "employee" // or determine based on email
-        }));
-        
-        toast.success("Login successful", {
-          description: "Welcome back!",
-        });
-        
-        setIsAuthenticated(true);
-        
-        // Redirect based on stored preference or path
-        const userType = localStorage.getItem("userType") || "employee";
-        if (userType === "employee") {
-          navigate("/job-seeker");
-        } else {
-          navigate("/employer");
-        }
-      }, 1500);
-    } catch (error) {
-      console.error("Login error:", error);
+  // Show error toast when auth error changes
+  useEffect(() => {
+    if (error) {
       toast.error("Login failed", {
-        description: "Invalid email or password",
+        description: error,
       });
-    } finally {
-      setIsLoading(false);
+    }
+  }, [error]);
+
+  const onSubmit = async (values: FormValues) => {
+    try {
+      await login(values.email, values.password);
+      
+      toast.success("Login successful", {
+        description: "Welcome back!",
+      });
+      
+      // Redirect based on user type
+      const redirectPath = from !== "/" ? from : 
+        (user?.userType === "employer" ? "/employer" : "/job-seeker");
+      
+      navigate(redirectPath);
+    } catch (error) {
+      // Error is handled in the store and shown via useEffect
+      console.error("Login submission error:", error);
     }
   };
 
-  // If already authenticated, redirect to dashboard
-  if (isAuthenticated) {
-    const userType = localStorage.getItem("userType") || "employee";
-    return <Navigate to={userType === "employee" ? "/job-seeker" : "/employer"} />;
+  // If already authenticated, redirect to appropriate dashboard
+  if (user && user.isAuthenticated) {
+    const redirectPath = user.userType === "employee" ? "/job-seeker" : "/employer";
+    return <Navigate to={redirectPath} />;
   }
 
   return (

@@ -1,5 +1,4 @@
-
-import React, { useState } from 'react';
+import React, { useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -23,6 +22,7 @@ import { toast } from "sonner";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Mail, Lock, UserPlus, User, Building2 } from "lucide-react";
+import { useAuthStore } from "@/store/authStore";
 
 // Define the form schema with validation
 const formSchema = z.object({
@@ -41,8 +41,8 @@ const formSchema = z.object({
 type FormValues = z.infer<typeof formSchema>;
 
 const Signup = () => {
-  const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
+  const { signup, isLoading, error } = useAuthStore();
   
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
@@ -55,43 +55,32 @@ const Signup = () => {
     },
   });
 
-  const onSubmit = async (values: FormValues) => {
-    setIsLoading(true);
-    
-    try {
-      // In a real app, you would register with a backend service
-      console.log("Signup data:", values);
-      
-      // Mock registration for demo
-      setTimeout(() => {
-        // Store user info in localStorage for demo purposes
-        localStorage.setItem("user", JSON.stringify({
-          name: values.name,
-          email: values.email,
-          isAuthenticated: true,
-          userType: values.userType
-        }));
-        
-        localStorage.setItem("userType", values.userType);
-        
-        toast.success("Account created successfully", {
-          description: "Welcome to SwapNet!",
-        });
-        
-        // Redirect to the profile page based on user type
-        if (values.userType === "employee") {
-          navigate("/employee-profile");
-        } else {
-          navigate("/employer-profile");
-        }
-      }, 1500);
-    } catch (error) {
-      console.error("Signup error:", error);
-      toast.error("Registration failed", {
-        description: "Please try again later",
+  // Show error toast when auth error changes
+  useEffect(() => {
+    if (error) {
+      toast.error("Signup failed", {
+        description: error,
       });
-    } finally {
-      setIsLoading(false);
+    }
+  }, [error]);
+
+  const onSubmit = async (values: FormValues) => {
+    try {
+      await signup(values.name, values.email, values.password, values.userType);
+      
+      toast.success("Account created successfully", {
+        description: "Welcome to SwapNet!",
+      });
+      
+      // Redirect to the profile page based on user type
+      if (values.userType === "employee") {
+        navigate("/employee-profile");
+      } else {
+        navigate("/employer-profile");
+      }
+    } catch (error) {
+      // Error is handled in the store and shown via useEffect
+      console.error("Signup submission error:", error);
     }
   };
 
