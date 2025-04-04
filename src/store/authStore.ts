@@ -1,4 +1,3 @@
-
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import axios from 'axios';
@@ -11,6 +10,7 @@ interface User {
   userType: 'employee' | 'employer';
   isAuthenticated: boolean;
   hasCV?: boolean;
+  avatar?: string;
 }
 
 interface AuthState {
