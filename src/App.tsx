@@ -13,7 +13,6 @@ import EmployeeProfile from "./pages/EmployeeProfile";
 import EmployerProfile from "./pages/EmployerProfile";
 import ColdMailing from "./pages/ColdMailing";
 import NotFound from "./pages/NotFound";
-import AuthProtected from "./components/AuthProtected";
 
 const queryClient = new QueryClient();
 
@@ -29,32 +28,12 @@ const App = () => (
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<Signup />} />
           
-          {/* Protected routes */}
-          <Route path="/job-seeker" element={
-            <AuthProtected userType="employee">
-              <JobSeekerDashboard />
-            </AuthProtected>
-          } />
-          <Route path="/employer" element={
-            <AuthProtected userType="employer">
-              <EmployerDashboard />
-            </AuthProtected>
-          } />
-          <Route path="/employee-profile" element={
-            <AuthProtected userType="employee">
-              <EmployeeProfile />
-            </AuthProtected>
-          } />
-          <Route path="/employer-profile" element={
-            <AuthProtected userType="employer">
-              <EmployerProfile />
-            </AuthProtected>
-          } />
-          <Route path="/cold-mailing" element={
-            <AuthProtected>
-              <ColdMailing />
-            </AuthProtected>
-          } />
+          {/* All routes accessible without authentication */}
+          <Route path="/job-seeker" element={<JobSeekerDashboard />} />
+          <Route path="/employer" element={<EmployerDashboard />} />
+          <Route path="/employee-profile" element={<EmployeeProfile />} />
+          <Route path="/employer-profile" element={<EmployerProfile />} />
+          <Route path="/cold-mailing" element={<ColdMailing />} />
           
           {/* Fallback route */}
           <Route path="*" element={<NotFound />} />

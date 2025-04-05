@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { 
   User, 
@@ -12,7 +12,6 @@ import {
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { useAuthStore } from '@/store/authStore';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -27,18 +26,7 @@ const Header: React.FC = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const isHome = location.pathname === '/';
-  const { user, logout } = useAuthStore();
   
-  const handleLogout = async () => {
-    try {
-      await logout();
-      toast.success("Logged out successfully");
-      navigate('/');
-    } catch (error) {
-      toast.error("Failed to logout");
-    }
-  };
-
   return (
     <header className="w-full py-4 px-6 bg-white/80 backdrop-blur-md shadow-sm z-10 sticky top-0">
       <div className="flex justify-between items-center max-w-7xl mx-auto">
@@ -59,49 +47,27 @@ const Header: React.FC = () => {
           </Link>
         </div>
         
-        {isHome && !user && (
+        {isHome && (
           <div className="flex gap-3">
-            <Link to="/login">
-              <Button variant="outline" className="font-medium">Login</Button>
-            </Link>
-            <Link to="/signup">
-              <Button className="font-medium bg-swapnet-blue hover:bg-swapnet-blue/90">Sign Up</Button>
-            </Link>
-          </div>
-        )}
-        
-        {isHome && user && (
-          <div className="flex gap-2">
-            <Link to={user.userType === 'employee' ? '/job-seeker' : '/employer'}>
+            <Link to="/job-seeker">
               <Button variant="outline" className="flex items-center gap-2">
-                {user.userType === 'employee' ? (
-                  <>
-                    <User className="h-4 w-4" />
-                    Job Seeker Dashboard
-                  </>
-                ) : (
-                  <>
-                    <Briefcase className="h-4 w-4" />
-                    Employer Dashboard
-                  </>
-                )}
+                <User className="h-4 w-4" />
+                Job Seeker
+              </Button>
+            </Link>
+            <Link to="/employer">
+              <Button className="font-medium bg-swapnet-blue hover:bg-swapnet-blue/90 flex items-center gap-2">
+                <Briefcase className="h-4 w-4" />
+                Employer
               </Button>
             </Link>
           </div>
         )}
         
-        {!isHome && !user && (
-          <div className="flex gap-2">
-            <Link to="/login">
-              <Button variant="outline">Login</Button>
-            </Link>
-          </div>
-        )}
-        
-        {!isHome && user && (
+        {!isHome && (
           <div className="flex items-center gap-4">
             <div className="hidden md:flex">
-              {user.userType === 'employee' ? (
+              {location.pathname.includes('job-seeker') || location.pathname.includes('employee-profile') ? (
                 <span className="flex items-center gap-1 text-sm font-medium">
                   <User className="h-4 w-4" /> Job Seeker Mode
                 </span>
@@ -116,9 +82,8 @@ const Header: React.FC = () => {
               <DropdownMenuTrigger asChild>
                 <Button variant="ghost" className="relative h-8 w-8 rounded-full flex items-center justify-center p-0 overflow-hidden">
                   <Avatar className="h-8 w-8">
-                    <AvatarImage src={user?.avatar || ''} alt={user?.name || ''} />
                     <AvatarFallback className="bg-primary/10 text-primary text-sm">
-                      {user?.name?.substring(0, 2).toUpperCase() || "U"}
+                      US
                     </AvatarFallback>
                   </Avatar>
                 </Button>
@@ -126,14 +91,14 @@ const Header: React.FC = () => {
               <DropdownMenuContent className="w-56" align="end" forceMount>
                 <DropdownMenuLabel className="font-normal">
                   <div className="flex flex-col space-y-1">
-                    <p className="text-sm font-medium leading-none">{user?.name}</p>
+                    <p className="text-sm font-medium leading-none">Guest User</p>
                     <p className="text-xs leading-none text-muted-foreground">
-                      {user?.email}
+                      guest@example.com
                     </p>
                   </div>
                 </DropdownMenuLabel>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem onClick={() => navigate(user?.userType === 'employee' ? '/employee-profile' : '/employer-profile')}>
+                <DropdownMenuItem onClick={() => navigate(location.pathname.includes('job-seeker') ? '/employee-profile' : '/employer-profile')}>
                   <User className="mr-2 h-4 w-4" />
                   <span>Profile</span>
                 </DropdownMenuItem>
@@ -141,22 +106,13 @@ const Header: React.FC = () => {
                   <Mail className="mr-2 h-4 w-4" />
                   <span>Cold Mailing</span>
                 </DropdownMenuItem>
-                {user?.userType === 'employee' && (
-                  <DropdownMenuItem onClick={() => navigate('/job-seeker')}>
-                    <FileText className="mr-2 h-4 w-4" />
-                    <span>Job Dashboard</span>
-                  </DropdownMenuItem>
-                )}
-                {user?.userType === 'employer' && (
-                  <DropdownMenuItem onClick={() => navigate('/employer')}>
-                    <Briefcase className="mr-2 h-4 w-4" />
-                    <span>Employer Dashboard</span>
-                  </DropdownMenuItem>
-                )}
-                <DropdownMenuSeparator />
-                <DropdownMenuItem onClick={handleLogout}>
-                  <LogOut className="mr-2 h-4 w-4" />
-                  <span>Log out</span>
+                <DropdownMenuItem onClick={() => navigate('/job-seeker')}>
+                  <FileText className="mr-2 h-4 w-4" />
+                  <span>Job Dashboard</span>
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => navigate('/employer')}>
+                  <Briefcase className="mr-2 h-4 w-4" />
+                  <span>Employer Dashboard</span>
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
