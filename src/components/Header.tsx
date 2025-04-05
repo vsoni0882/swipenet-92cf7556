@@ -40,8 +40,8 @@ const Header: React.FC = () => {
   };
 
   return (
-    <header className="w-full py-4 px-6 bg-white shadow-sm">
-      <div className="flex justify-between items-center">
+    <header className="w-full py-4 px-6 bg-white/80 backdrop-blur-md shadow-sm z-10 sticky top-0">
+      <div className="flex justify-between items-center max-w-7xl mx-auto">
         <div className="flex items-center gap-2">
           {!isHome && (
             <Link to="/">
@@ -52,20 +52,20 @@ const Header: React.FC = () => {
           )}
           <Link to="/" className="flex items-center gap-2">
             <img 
-              src="/lovable-uploads/6e0a8e3b-3216-429b-bf26-fdbaf025228d.png" 
+              src="/lovable-uploads/c1f1574d-186a-4296-b4ee-0033bf9af489.png" 
               alt="SwipeNet Logo" 
-              className="h-8" 
+              className="h-10" 
             />
           </Link>
         </div>
         
         {isHome && !user && (
-          <div className="flex gap-2">
+          <div className="flex gap-3">
             <Link to="/login">
-              <Button variant="outline">Login</Button>
+              <Button variant="outline" className="font-medium">Login</Button>
             </Link>
             <Link to="/signup">
-              <Button>Sign Up</Button>
+              <Button className="font-medium bg-swapnet-blue hover:bg-swapnet-blue/90">Sign Up</Button>
             </Link>
           </div>
         )}
