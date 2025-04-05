@@ -58,9 +58,15 @@ router.post('/login', async (req, res) => {
 
 // Get current user route
 router.get('/me', protect, (req, res) => {
+  // Add isAuthenticated flag
+  const userData = req.user.toObject ? req.user.toObject() : req.user;
+  
   res.status(200).json({
     status: 'success',
-    user: req.user
+    user: {
+      ...userData,
+      isAuthenticated: true
+    }
   });
 });
 

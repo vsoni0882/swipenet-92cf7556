@@ -1,3 +1,4 @@
+
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import axios from 'axios';
@@ -46,13 +47,20 @@ export const useAuthStore = create<AuthState>()(
             { withCredentials: true } // Important for cookies
           );
           
+          // Ensure user has isAuthenticated flag
+          const userData = {
+            ...response.data.user,
+            isAuthenticated: true,
+            id: response.data.user._id || response.data.user.id, // Handle different id formats
+          };
+          
           set({ 
-            user: response.data.user,
+            user: userData,
             isLoading: false
           });
           
           // Set cookie as backup (JWT will be handled by HTTP-only cookie from server)
-          Cookies.set('userType', response.data.user.userType, { expires: 7 });
+          Cookies.set('userType', userData.userType, { expires: 7 });
           
           return response.data;
         } catch (error: any) {
@@ -74,13 +82,20 @@ export const useAuthStore = create<AuthState>()(
             { withCredentials: true }
           );
           
+          // Ensure user has isAuthenticated flag
+          const userData = {
+            ...response.data.user,
+            isAuthenticated: true,
+            id: response.data.user._id || response.data.user.id, // Handle different id formats
+          };
+          
           set({ 
-            user: response.data.user,
+            user: userData,
             isLoading: false
           });
           
           // Set cookie as backup
-          Cookies.set('userType', response.data.user.userType, { expires: 7 });
+          Cookies.set('userType', userData.userType, { expires: 7 });
           
           return response.data;
         } catch (error: any) {
@@ -120,20 +135,34 @@ export const useAuthStore = create<AuthState>()(
             withCredentials: true 
           });
           
+          // Ensure user has isAuthenticated flag
+          const userData = {
+            ...response.data.user,
+            isAuthenticated: true,
+            id: response.data.user._id || response.data.user.id, // Handle different id formats
+          };
+          
           set({ 
-            user: response.data.user,
+            user: userData,
             isLoading: false
           });
         } catch (error) {
           // If the API call fails, fallback to localStorage
-          const userData = localStorage.getItem('user');
+          const userData = localStorage.getItem('auth-storage');
           if (userData) {
             try {
-              const parsedUser = JSON.parse(userData);
-              set({ 
-                user: parsedUser,
-                isLoading: false 
-              });
+              const parsedStorage = JSON.parse(userData);
+              if (parsedStorage.state && parsedStorage.state.user) {
+                set({ 
+                  user: parsedStorage.state.user,
+                  isLoading: false 
+                });
+              } else {
+                set({ 
+                  user: null,
+                  isLoading: false 
+                });
+              }
             } catch (e) {
               set({ 
                 user: null,

@@ -59,9 +59,15 @@ exports.createSendToken = (user, statusCode, res) => {
   // Remove password from output
   user.password = undefined;
   
+  // Add isAuthenticated flag for frontend
+  const userData = user.toObject ? user.toObject() : user;
+  
   res.status(statusCode).json({
     status: 'success',
     token,
-    user
+    user: {
+      ...userData,
+      isAuthenticated: true
+    }
   });
 };
